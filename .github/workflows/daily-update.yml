@@ -1,0 +1,39 @@
+name: Daily Auto Commit
+
+on:
+  # This is the "alarm clock" (Cron syntax)
+  schedule:
+    # This runs at 08:30 UTC every single day. 
+    # (No wildcards for hour/minute as requested!)
+    - cron: '30 8 * * *'
+  
+  # This lets you click a button to run it immediately to test it!
+  workflow_dispatch: 
+
+# This gives your robot permission to save changes to your code
+permissions:
+  contents: write
+
+jobs:
+  daily_update_job:
+    runs-on: ubuntu-latest # The type of computer the robot uses
+
+    steps:
+      # Step 1: The robot downloads your code to look at it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: The step that includes your required email!
+      # It creates or updates a text file with today's date and time.
+      - name: Update file for 24f2002027@ds.study.iitm.ac.in
+        run: |
+          echo "Automated update logged on $(date)" >> devsync_activity.txt
+
+      # Step 3: The robot saves (commits) the new file back to your repo
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add devsync_activity.txt
+          git commit -m "chore: daily automated activity update"
+          git push
